@@ -2,6 +2,7 @@ import weakref
 
 from sdl2._sdl2 import ffi, lib
 
+from error import check_int_err
 
 _event_reference_map = weakref.WeakKeyDictionary()
 
@@ -44,22 +45,50 @@ class Event(object):
 
 
 def pump():
+    """Pumps the event loop, gathering events from the input devices.
+    This function updates the event queue and internal input device state.
+    This should only be run in the thread that sets the video mode.
+    """
     lib.SDL_PumpEvents()
 
 def peek(quantity, min_type=lib.SDL_FIRSTEVENT, max_type=lib.SDL_LASTEVENT):
-    events = ffi.new('SDL_Event[]', quantity)
-    quantity_retrieved = lib.SDL_PeepEvents(events, quantity, lib.SDL_PEEKEVENT, min_type, max_type)
+    """Return events at the front of the event queue, within the specified minimum and maximum type,
+    and do not remove them from the queue.
 
-    result = []
-    for i in range(quantity_retrieved):
-        event_ptr = events + i
-        _event_reference_map[event_ptr] = events
-        result.append(Event._from_ptr(event_ptr))
-    return result
+    Args:
+        quantity (int): The maximum number of events to return.
+        min_type (int): The minimum value for the event type of the returned events.
+        max_type (int): The maximum value for the event type of the returned events.
+
+    Returns:
+        List[Event]: Events from the front of the event queue.
+
+    Raises:
+        SDLError: If there was an error retrieving the events.
+    """
+
+    return _peep(quantity, lib.SDL_PEEKEVENT, min_type, max_type)
 
 def get(quantity, min_type=lib.SDL_FIRSTEVENT, max_type=lib.SDL_LASTEVENT):
+    """Return events at the front of the event queue, within the specified minimum and maximum type,
+    and remove them from the queue.
+
+    Args:
+        quantity (int): The maximum number of events to return.
+        min_type (int): The minimum value for the event type of the returned events.
+        max_type (int): The maximum value for the event type of the returned events.
+
+    Returns:
+        List[Event]: Events from the front of the event queue.
+
+    Raises:
+        SDLError: If there was an error retrieving the events.
+    """
+    return _peep(quantity, lib.SDL_GETEVENT, min_type, max_type)
+
+def _peep(quantity, action, min_type, max_type):
     events = ffi.new('SDL_Event[]', quantity)
-    quantity_retrieved = lib.SDL_PeepEvents(events, quantity, lib.SDL_GETEVENT, min_type, max_type)
+    quantity_retrieved = check_int_err(lib.SDL_PeepEvents(events, quantity, action, min_type, max_type))
 
     result = []
     for i in range(quantity_retrieved):
@@ -69,6 +98,11 @@ def get(quantity, min_type=lib.SDL_FIRSTEVENT, max_type=lib.SDL_LASTEVENT):
     return result
 
 def poll():
+    """Polls for currently pending events.
+
+    Returns:
+        Iterable[Event]: Events from the event queue.
+    """
     event = Event()
     while lib.SDL_PollEvent(event._ptr):
         yield event
