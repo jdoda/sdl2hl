@@ -11,6 +11,7 @@ Goals
 -----
 
 The goals of sdl2hl are:
+
 - Provide a straightforward, Pythonic API on top of the functionality provided
   by SDL2.
 - Provide good documentation, independent of the SDL2 documentation.
