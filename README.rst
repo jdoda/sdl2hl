@@ -50,7 +50,7 @@ open a github pull request at https://github.com/jdoda/sdl2hl/pulls .
 Example
 -------
 
-::
+.. code:: python
 
 	import sys
 
