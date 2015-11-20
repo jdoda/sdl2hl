@@ -12,9 +12,20 @@ class Surface(object):
         return surface
 
     @staticmethod
-    def from_image(path):
+    def load_bmp(path):
+        """Load a surface from a file.
+
+        Args:
+            path (str): Path to the BMP file to load.
+
+        Returns:
+            Surface: A surface containing the pixels loaded from the file.
+
+        Raises:
+            SDLError: If the file cannot be loaded.
+        """
         surface = object.__new__(Surface)
-        surface._ptr = lib.IMG_Load(path)
+        surface._ptr = check_ptr_err(lib.SDL_LoadBMP_RW(lib.SDL_RWFromFile(path, "rb"), 1))
         return surface
 
     def __del__(self):
@@ -47,8 +58,3 @@ class Surface(object):
         """
         check_int_err(lib.SDL_UpperBlit(self._ptr, src_rect._ptr, dst_surf._ptr, dst_rect._ptr))
 
-    def lock(self):
-        check_int_err(lib.SDL_LockSurface(self._ptr))
-
-    def unlock(self):
-        lib.SDL_UnlockSurface(self._ptr)

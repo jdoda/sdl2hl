@@ -6,3 +6,4 @@ from rect import *
 from surface import *
 from events import Event
 import timer
+from error import SDLError

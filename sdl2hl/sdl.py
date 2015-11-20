@@ -3,12 +3,17 @@ from error import check_int_err
 
 
 def init(flags=0):
+    """This function initializes the subsystems specified by flags.
+
+    Args:
+        flags: Flags specifying which subsystems to initialize.
+
+    Raises:
+        SDLError: If there's an error initializing SDL.
+    """
     check_int_err(lib.SDL_Init(flags))
-#     lib.Mix_Init(lib.MIX_INIT_OGG)
-#     lib.Mix_OpenAudio(44100, lib.MIX_DEFAULT_FORMAT, lib.MIX_DEFAULT_CHANNELS, 1024)
-#     lib.TTF_Init()
 
 def quit():
-#     lib.TTF_Quit()
-#     lib.Mix_Quit()
+    """ This function cleans up all initialized subsystems. You should call it upon all exit conditions."""
+
     lib.SDL_Quit()

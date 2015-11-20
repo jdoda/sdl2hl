@@ -73,8 +73,7 @@ class Rect(object):
         self._ptr = ffi.new('SDL_Rect *', [x, y, w, h])
 
     def __eq__(self, other):
-        return (isinstance(other, Rect) and self.x == other.x and self.y == other.y
-                and self.w == other.w and self.h == other.h)
+        return bool(isinstance(other, Rect) and lib.RectEquals(self._ptr, other._ptr))
 
     def __ne__(self, other):
         return not (self == other)

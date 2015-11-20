@@ -30,6 +30,7 @@ setup(
     ],
 
     packages=['sdl2hl'],
+    test_suite='tests',
 
     install_requires=['sdl2-cffi>=1.0.0'],
 )
