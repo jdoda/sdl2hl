@@ -9,7 +9,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 
 setup(
     name='sdl2hl',
-    version='0.1.0',
+    version='0.1.1',
 
     description='A Pythonic API wrapper for SDL2.',
     long_description=long_description,
@@ -24,6 +24,7 @@ setup(
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: zlib/libpng License',
+        'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.4',
@@ -32,5 +33,8 @@ setup(
     packages=['sdl2hl'],
     test_suite='tests',
 
-    install_requires=['sdl2-cffi>=1.0.0'],
+    install_requires=[
+        'enum34>=1.0.0',
+        'sdl2-cffi>=1.0.0',
+    ],
 )

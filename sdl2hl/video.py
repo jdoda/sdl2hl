@@ -1,12 +1,32 @@
+from enum import IntEnum
+
 from sdl2._sdl2 import ffi, lib
 from error import check_ptr_err
+import enumtools
+
+
+class WindowFlags(IntEnum):
+    allow_highdpi = lib.SDL_WINDOW_ALLOW_HIGHDPI
+    borderless = lib.SDL_WINDOW_BORDERLESS
+    foreign = lib.SDL_WINDOW_FOREIGN
+    fullscreen = lib.SDL_WINDOW_FULLSCREEN
+    fullscreen_desktop = lib.SDL_WINDOW_FULLSCREEN_DESKTOP
+    hidden = lib.SDL_WINDOW_HIDDEN
+    input_focus = lib.SDL_WINDOW_INPUT_FOCUS
+    input_grabbed = lib.SDL_WINDOW_INPUT_GRABBED
+    maximized = lib.SDL_WINDOW_MAXIMIZED
+    minimized = lib.SDL_WINDOW_MINIMIZED
+    mouse_focus = lib.SDL_WINDOW_MOUSE_FOCUS
+    opengl = lib.SDL_WINDOW_OPENGL
+    resizable = lib.SDL_WINDOW_RESIZABLE
+    shown = lib.SDL_WINDOW_SHOWN
 
 
 class Window(object):
     """The type used to identify a window."""
 
     def __init__(self, title='sdl2', x=lib.SDL_WINDOWPOS_CENTERED, y=lib.SDL_WINDOWPOS_CENTERED,
-                 w=640, h=480, flags=lib.SDL_WINDOW_SHOWN):
+                 w=640, h=480, *flags):
         """Create a window with the specified position, dimensions, and flags.
 
         Args:
@@ -15,14 +35,11 @@ class Window(object):
             y (int): The y position of the window.
             w (int): The width of the window.
             h (int): The height of the window.
-            flags (int): The flags for the window, a mask of any of the following:
-                WINDOW_FULLSCREEN, WINDOW_OPENGL, WINDOW_HIDDEN, WINDOW_BORDERLESS, WINDOW_RESIZABLE,
-                WINDOW_MAXIMIZED, WINDOW_MINIMIZED, WINDOW_INPUT_GRABBED, WINDOW_ALLOW_HIGHDPI.
-
+            *flags (WindowFlags): The flags for the window.
         Raises:
             SDLError: If the window could not be created.
         """
-        self._ptr = check_ptr_err(lib.SDL_CreateWindow(title.encode('utf-8'), x, y, w, h, flags))
+        self._ptr = check_ptr_err(lib.SDL_CreateWindow(title.encode('utf-8'), x, y, w, h, enumtools.get_mask(flags)))
 
     def __del__(self):
         lib.SDL_DestroyWindow(self._ptr)

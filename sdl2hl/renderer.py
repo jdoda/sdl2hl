@@ -1,6 +1,18 @@
+from enum import IntEnum
+
 from sdl2._sdl2 import ffi, lib
 from error import check_int_err, check_ptr_err
+from pixels import PixelFormat
 import rect
+import enumtools
+
+
+class RendererFlags(IntEnum):
+    """Flags used when creating a rendering context."""
+    software = lib.SDL_RENDERER_SOFTWARE #: The renderer is a software fallback.
+    accelerated = lib.SDL_RENDERER_ACCELERATED #: The renderer uses hardware acceleration.
+    presentvsync = lib.SDL_RENDERER_PRESENTVSYNC #: Present is synchronized with the refresh rate.
+    targettexture = lib.SDL_RENDERER_TARGETTEXTURE #: The renderer supports rendering to texture.
 
 
 class Renderer(object):
@@ -28,19 +40,19 @@ class Renderer(object):
         renderer._ptr = self._ptr = check_ptr_err(lib.SDL_CreateSoftwareRenderer(surface._ptr))
         return renderer
 
-    def __init__(self, window, index=-1, flags=0):
+    def __init__(self, window, index=-1, *flags):
         """Create a 2D rendering context for a window.
 
         Args:
             window (Window): The window where rendering is displayed.
             index (int): The index of the rendering driver to initialize, or -1 to initialize the first one supporting
                          the requested flags.
-            flags (int): The requested renderer flags.
+            *flags (RendererFlags): The requested renderer flags.
 
         Raises:
             SDLError: If there was an error creating the renderer.
         """
-        self._ptr = check_ptr_err(lib.SDL_CreateRenderer(window._ptr, index, flags))
+        self._ptr = check_ptr_err(lib.SDL_CreateRenderer(window._ptr, index, enumtools.get_mask(flags)))
 
     def __del__(self):
         lib.SDL_DestroyRenderer(self._ptr)
@@ -57,14 +69,14 @@ class Renderer(object):
 
     @property
     def flags(self):
-        """int: Supported renderer flags."""
-        return self._get_renderer_info().flags
+        """Set[RendererFlags]: Supported renderer flags."""
+        return enumtools.get_items(RendererFlags, self._get_renderer_info().flags)
 
     @property
     def texture_formats(self):
-        """List[int]: The available texture formats."""
+        """Set[PixelFormat]: The available texture formats."""
         info = self._get_renderer_info()
-        return [info.texture_formats[i] for i in range(info.num_texture_formats)]
+        return {PixelFormat(info.texture_formats[i]) for i in range(info.num_texture_formats)}
 
     @property
     def max_texture_width(self):
@@ -141,11 +153,11 @@ class Renderer(object):
         """
         check_int_err(lib.SDL_RenderDrawLine(self._ptr, x1, y1, x2, y2))
 
-    def draw_lines(self, points):
+    def draw_lines(self, *points):
         """Draw a series of connected lines on the current rendering target.
 
         Args:
-            points (List[Point]): The points along the lines.
+            *points (Point): The points along the lines.
 
         Raises:
             SDLError: If an error is encountered.
@@ -167,11 +179,11 @@ class Renderer(object):
         """
         check_int_err(lib.SDL_RenderDrawPoint(self._ptr, x, y))
 
-    def draw_points(self, points):
+    def draw_points(self, *points):
         """Draw multiple points on the current rendering target.
 
         Args:
-            points (List[Point]): The points to draw.
+            *points (Point): The points to draw.
 
         Raises:
             SDLError: If an error is encountered.
@@ -192,11 +204,11 @@ class Renderer(object):
         """
         check_int_err(lib.SDL_RenderDrawRect(self._ptr, rect._ptr))
 
-    def draw_rects(self, rects):
+    def draw_rects(self, *rects):
         """Draw some number of rectangles on the current rendering target.
 
         Args:
-            rects (List[Rect]): A list of destination rectangles.
+            *rects (Rect): The destination rectangles.
 
         Raises:
             SDLError: If an error is encountered.
@@ -217,11 +229,11 @@ class Renderer(object):
         """
         check_int_err(lib.SDL_RenderFillRect(self._ptr, rect._ptr))
 
-    def fill_rects(self, rects):
+    def fill_rects(self, *rects):
         """Fill some number of rectangles on the current rendering target with the drawing color.
 
         Args:
-            rects (List[Rect]): A list of destination rectangles.
+            *rects (Rect): The destination rectangles.
 
         Raises:
             SDLError: If an error is encountered.
@@ -259,6 +271,12 @@ class Renderer(object):
         lib.SDL_RenderPresent(self._ptr)
 
 
+class TextureAccess(IntEnum):
+    static = lib.SDL_TEXTUREACCESS_STATIC #: Changes rarely, not lockable.
+    streaming = lib.SDL_TEXTUREACCESS_STREAMING #: Changes frequently, lockable.
+    target = lib.SDL_TEXTUREACCESS_TARGET #: Texture can be used as a render target.
+
+
 class Texture(object):
 
     @staticmethod
@@ -289,8 +307,8 @@ class Texture(object):
 
         Args:
             renderer (Renderer): The renderer.
-            fmt (int): The format of the texture.
-            access (int): The access value for the texture.
+            fmt (PixelFormat): The format of the texture.
+            access (TextureAccess): The access value for the texture.
             w (int): The width of the texture in pixels.
             h (int): The height of the texture in pixels.
 
@@ -305,19 +323,19 @@ class Texture(object):
 
     @property
     def format(self):
-        """int: The raw format of the texture. The actual format may differ, but pixel transfers will use this
-                format.
+        """PixelFormat: The raw format of the texture. The actual format may differ, but pixel transfers will use this
+                        format.
         """
         fmt = ffi.new('Uint32 *')
         check_int_err(lib.SDL_QueryTexture(self._ptr, fmt, ffi.NULL, ffi.NULL, ffi.NULL))
-        return fmt[0]
+        return PixelFormat(fmt[0])
 
     @property
     def access(self):
-        """int: The actual access to the texture."""
+        """TextureAccess: The actual access to the texture."""
         access = ffi.new('int *')
         check_int_err(lib.SDL_QueryTexture(self._ptr, ffi.NULL, access, ffi.NULL, ffi.NULL))
-        return access[0]
+        return TextureAccess(access[0])
 
     @property
     def w(self):
