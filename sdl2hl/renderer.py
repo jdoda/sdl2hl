@@ -164,7 +164,7 @@ class Renderer(object):
         """
         point_array = ffi.new('SDL_Point[]', len(points))
         for i, p in enumerate(points):
-            point_array[i] = p._ptr
+            point_array[i] = p._ptr[0]
         check_int_err(lib.SDL_RenderDrawLines(self._ptr, point_array, len(points)))
 
     def draw_point(self, x, y):
@@ -190,7 +190,7 @@ class Renderer(object):
         """
         point_array = ffi.new('SDL_Point[]', len(points))
         for i, p in enumerate(points):
-            point_array[i] = p._ptr
+            point_array[i] = p._ptr[0]
         check_int_err(lib.SDL_RenderDrawPoints(self._ptr, point_array, len(points)))
 
     def draw_rect(self, rect):
@@ -240,7 +240,7 @@ class Renderer(object):
         """
         rect_array = ffi.new('SDL_Rect[]', len(rects))
         for i, r in enumerate(rects):
-            rect_array[i] = r._ptr
+            rect_array[i] = r._ptr[0]
         check_int_err(lib.SDL_RenderFillRects(self._ptr, rect_array, len(rects)))
 
     def copy(self, texture, source_rect=None, dest_rect=None, rotation=0, center=None, flip=lib.SDL_FLIP_NONE):
