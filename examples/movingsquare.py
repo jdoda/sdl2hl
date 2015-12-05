@@ -17,13 +17,13 @@ while True:
         if event.type == sdl2hl.QUIT:
             sdl2hl.quit()
             sys.exit()
-        elif event.type == sdl2hl.KEYDOWN and event.keysym.sym == sdl2hl.K_LEFT:
+        elif event.type == sdl2hl.KEYDOWN and event.keycode == sdl2hl.KeyCode.left:
             avatar.x -= 1
-        elif event.type == sdl2hl.KEYDOWN and event.keysym.sym == sdl2hl.K_RIGHT:
+        elif event.type == sdl2hl.KEYDOWN and event.keycode == sdl2hl.KeyCode.right:
             avatar.x += 1
-        elif event.type == sdl2hl.KEYDOWN and event.keysym.sym == sdl2hl.K_UP:
+        elif event.type == sdl2hl.KEYDOWN and event.keycode == sdl2hl.KeyCode.up:
             avatar.y -= 1
-        elif event.type == sdl2hl.KEYDOWN and event.keysym.sym == sdl2hl.K_DOWN:
+        elif event.type == sdl2hl.KEYDOWN and event.keycode == sdl2hl.KeyCode.down:
             avatar.y += 1
 
     renderer.draw_color = BACKGROUND_COLOR

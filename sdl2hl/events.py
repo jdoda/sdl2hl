@@ -1,35 +1,109 @@
+from enum import IntEnum
 import weakref
 
 from sdl2._sdl2 import ffi, lib
 
 from error import check_int_err
+from keycode import KeyCode, KeyMod
+from scancode import ScanCode
+from enumtools import get_items
+
 
 _event_reference_map = weakref.WeakKeyDictionary()
+_event_userdata = set()
+
+
+class EventType(IntEnum):
+    quit = lib.SDL_QUIT #: User-requested quit
+
+    # Window events
+    windowevent = lib.SDL_WINDOWEVENT #: Window state change
+    syswmevent = lib.SDL_SYSWMEVENT #: System specific event
+
+    # Keyboard events
+    keydown = lib.SDL_KEYDOWN #: Key pressed
+    keyup = lib.SDL_KEYUP #: Key released
+    textediting = lib.SDL_TEXTEDITING #: Keyboard text editing (composition)
+    textinput = lib.SDL_TEXTINPUT #: Keyboard text input
+    #keymapchanged = lib.SDL_KEYMAPCHANGED #: Keymap changed due to a system event such as an input language or keyboard layout change.
+
+    # Mouse events
+    mousemotion = lib.SDL_MOUSEMOTION #: Mouse moved
+    mousebuttondow = lib.SDL_MOUSEBUTTONDOWN #: Mouse button pressed
+    mousebuttonup = lib.SDL_MOUSEBUTTONUP #: Mouse button released
+    mousewheel = lib.SDL_MOUSEWHEEL #: Mouse wheel motion
+
+    # Joystick events
+    joyaxismotion = lib.SDL_JOYAXISMOTION #: Joystick axis motion
+    joyballmotion = lib.SDL_JOYBALLMOTION #: Joystick trackball motion
+    joyhatmotion = lib.SDL_JOYHATMOTION #: Joystick hat position change
+    joybuttondown = lib.SDL_JOYBUTTONDOWN #: Joystick button pressed
+    joybuttonup = lib.SDL_JOYBUTTONUP #: Joystick button released
+    joydeviceadded = lib.SDL_JOYDEVICEADDED #: A new joystick has been inserted into the system
+    joydeviceremoved = lib.SDL_JOYDEVICEREMOVED #: An opened joystick has been removed
+
+    # Game controller events
+    controlleraxismotion = lib.SDL_CONTROLLERAXISMOTION #: Game controller axis motion
+    controllerbuttondown = lib.SDL_CONTROLLERBUTTONDOWN #: Game controller button pressed
+    controllerbuttonup = lib.SDL_CONTROLLERBUTTONUP #: Game controller button released
+    controllerdeviceadded = lib.SDL_CONTROLLERDEVICEADDED #: A new Game controller has been inserted into the system
+    controllerdeviceremoved = lib.SDL_CONTROLLERDEVICEREMOVED #: An opened Game controller has been removed
+    controllerdeviceremapped = lib.SDL_CONTROLLERDEVICEREMAPPED #: The controller mapping was updated
+
+    # Touch events
+    fingerdown = lib.SDL_FINGERDOWN
+    fingerup = lib.SDL_FINGERUP
+    fingermotion = lib.SDL_FINGERMOTION
+
+    # Gesture events
+    dollargesture = lib.SDL_DOLLARGESTURE
+    dollarrecord = lib.SDL_DOLLARRECORD
+    multigesture = lib.SDL_MULTIGESTURE
+
+    # Clipboard events
+    clipboardupdate = lib.SDL_CLIPBOARDUPDATE #: The clipboard changed
+
+    # Drag and drop events
+    dropfile = lib.SDL_DROPFILE #: The system requests a file open
+
+    # Audio hotplug events
+    #audiodeviceadded = lib.SDL_AUDIODEVICEADDED #: A new audio device is available
+    #audiodeviceremoved = lib.SDL_AUDIODEVICEREMOVED #: An audio device has been removed.
+
+    # Render events
+    render_targets_reset = lib.SDL_RENDER_TARGETS_RESET #: The render targets have been reset and their contents need to be updated
+    #render_device_reset = lib.SDL_RENDER_DEVICE_RESET #: The device has been reset and all textures need to be recreated
+
+
+class WindowEventType(IntEnum):
+    close = lib.SDL_WINDOWEVENT_CLOSE
+    enter = lib.SDL_WINDOWEVENT_ENTER
+    exposed = lib.SDL_WINDOWEVENT_EXPOSED
+    focus_gained = lib.SDL_WINDOWEVENT_FOCUS_GAINED
+    focus_lost = lib.SDL_WINDOWEVENT_FOCUS_LOST
+    hidden = lib.SDL_WINDOWEVENT_HIDDEN
+    leave = lib.SDL_WINDOWEVENT_LEAVE
+    maximized = lib.SDL_WINDOWEVENT_MAXIMIZED
+    minimized = lib.SDL_WINDOWEVENT_MINIMIZED
+    moved = lib.SDL_WINDOWEVENT_MOVED
+    none = lib.SDL_WINDOWEVENT_NONE
+    resized = lib.SDL_WINDOWEVENT_RESIZED
+    restored = lib.SDL_WINDOWEVENT_RESTORED
+    shown = lib.SDL_WINDOWEVENT_SHOWN
+    size_changed = lib.SDL_WINDOWEVENT_SIZE_CHANGED
+
+
+class KeyState(IntEnum):
+    pressed = lib.SDL_PRESSED
+    released = lib.SDL_RELEASED
 
 
 class Event(object):
 
-    types = {lib.SDL_KEYDOWN : 'key',
-             lib.SDL_KEYUP : 'key',
-             lib.SDL_JOYAXISMOTION : 'jaxis',
-             lib.SDL_JOYBALLMOTION : 'jball',
-             lib.SDL_JOYHATMOTION : 'jhat',
-             lib.SDL_JOYBUTTONDOWN : 'jbutton',
-             lib.SDL_JOYBUTTONUP : 'jbutton',
-             lib.SDL_MOUSEMOTION : 'motion',
-             lib.SDL_MOUSEBUTTONDOWN : 'button',
-             lib.SDL_MOUSEBUTTONUP : 'button',
-             lib.SDL_MOUSEWHEEL : 'wheel',
-             lib.SDL_QUIT : 'quit',
-             lib.SDL_SYSWMEVENT : 'syswm',
-             lib.SDL_TEXTEDITING : 'edit',
-             lib.SDL_TEXTINPUT : 'text',
-             lib.SDL_USEREVENT : 'user',
-             lib.SDL_WINDOWEVENT : 'window'}
-
     @staticmethod
     def _from_ptr(ptr):
-        event = object.__new__(Event)
+        event_class = _EVENT_TYPES.get(ptr.type, Event)
+        event = object.__new__(event_class)
         event._ptr = ptr
         return event
 
@@ -38,10 +112,63 @@ class Event(object):
 
     @property
     def type(self):
-        return self._ptr.type
+        """EventType: The type of the event."""
+        return EventType(self._ptr.common.type)
 
-    def __getattr__(self, name):
-        return getattr(getattr(self._ptr, Event.types[self._ptr.type]), name)
+    @property
+    def timestamp(self):
+        """int: The timestamp of the event."""
+        return self._ptr.common.timestamp
+
+
+class QuitEvent(Event):
+    pass
+    
+
+class WindowEvent(Event):
+
+    @property
+    def window_id(self):
+        """int: The id of the associated window."""
+        return self._ptr.window.windowID
+
+    @property
+    def event(self):
+        """WindowEventType: The type of window event."""
+        return WindowEventType(self._ptr.window.event)
+
+
+class KeyboardEvent(Event):
+
+    @property
+    def window_id(self):
+        """int: The id of window with keyboard focus, if any."""
+        return self._ptr.key.windowID
+
+    @property
+    def state(self):
+        """KeyState: The state of the key."""
+        return KeyState(self._ptr.key.state)
+
+    @property
+    def repeat(self):
+        """bool: True if this is a key repeat."""
+        return bool(self._ptr.key.repeat)
+
+    @property
+    def scancode(self):
+        """ScanCode: Physical keycode."""
+        return ScanCode(self._ptr.key.keysym.scancode)
+
+    @property
+    def keycode(self):
+        """KeyCode: Virtual keycode."""
+        return KeyCode(self._ptr.key.keysym.sym)
+
+    @property
+    def mod(self):
+        """Set[KeyMod]: The current key modifiers."""
+        return get_items(KeyMod, self._ptr.key.keysym.mod)
 
 
 def pump():
@@ -103,8 +230,16 @@ def poll():
     Returns:
         Iterable[Event]: Events from the event queue.
     """
-    event = Event()
-    while lib.SDL_PollEvent(event._ptr):
-        yield event
-        event = Event()
+    event_ptr = ffi.new('SDL_Event *')
+    while lib.SDL_PollEvent(event_ptr):
+        yield Event._from_ptr(event_ptr)
+        event = ffi.new('SDL_Event *')
+      
+        
+_EVENT_TYPES = {
+        EventType.quit : QuitEvent,
+        EventType.windowevent: WindowEvent,
+        EventType.keydown : KeyboardEvent,
+        EventType.keyup : KeyboardEvent,
+    }
     
