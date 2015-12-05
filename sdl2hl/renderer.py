@@ -215,7 +215,7 @@ class Renderer(object):
         """
         rect_array = ffi.new('SDL_Rect[]', len(rects))
         for i, r in enumerate(rects):
-            rect_array[i] = r._ptr
+            rect_array[i] = r._ptr[0]
         check_int_err(lib.SDL_RenderDrawRects(self._ptr, rect_array, len(rects)))
 
     def fill_rect(self, rect):
