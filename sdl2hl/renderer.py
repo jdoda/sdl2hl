@@ -243,6 +243,20 @@ class Renderer(object):
             rect_array[i] = r._ptr[0]
         check_int_err(lib.SDL_RenderFillRects(self._ptr, rect_array, len(rects)))
 
+    def draw_circle(self, x, y, r, color):
+        """Draw a circle.
+        
+        Args:
+            x (int): The x coordinate of the center of the circle.
+            y (int): The y coordinate of the center of the circle.
+            r (int): The radius of the circle.
+            color (Tuple[int, int, int, int]): The color of the circle.
+            
+        Raises:
+            SDLError: If an error is encountered.
+        """
+        check_int_err(lib.circleRGBA(self._ptr, x, y, r, color[0], color[1], color[2], color[3]))
+
     def copy(self, texture, source_rect=None, dest_rect=None, rotation=0, center=None, flip=lib.SDL_FLIP_NONE):
         """Copy a portion of the source texture to the current rendering target, rotating it by angle around the given center.
 

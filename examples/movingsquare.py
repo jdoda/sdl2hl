@@ -30,6 +30,8 @@ while True:
     renderer.clear()
     renderer.draw_color = AVATAR_COLOR
     renderer.fill_rect(avatar)
+    
+    renderer.draw_circle(32, 32, 60, AVATAR_COLOR)
 
     renderer.present()
     
