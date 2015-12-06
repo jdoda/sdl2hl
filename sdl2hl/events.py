@@ -263,7 +263,7 @@ def pump():
     """
     lib.SDL_PumpEvents()
 
-def peek(quantity, min_type=Events.firstevent, max_type=Events.lastevent):
+def peek(quantity, min_type=EventType.firstevent, max_type=EventType.lastevent):
     """Return events at the front of the event queue, within the specified minimum and maximum type,
     and do not remove them from the queue.
 
@@ -281,7 +281,7 @@ def peek(quantity, min_type=Events.firstevent, max_type=Events.lastevent):
 
     return _peep(quantity, lib.SDL_PEEKEVENT, min_type, max_type)
 
-def get(quantity, min_type=Events.firstevent, max_type=Events.lastevent):
+def get(quantity, min_type=EventType.firstevent, max_type=EventType.lastevent):
     """Return events at the front of the event queue, within the specified minimum and maximum type,
     and remove them from the queue.
 
