@@ -326,8 +326,8 @@ _EVENT_TYPES = {
     EventType.windowevent: WindowEvent,
     EventType.keydown : KeyboardEvent,
     EventType.keyup : KeyboardEvent,
-    EventType.mousemotion : MouseMotionEvent
-    EventType.mousebuttondown : MouseButtonEvent
-    EventType.mousebuttonup : MouseButtonEvent
+    EventType.mousemotion : MouseMotionEvent,
+    EventType.mousebuttondown : MouseButtonEvent,
+    EventType.mousebuttonup : MouseButtonEvent,
 }
     
