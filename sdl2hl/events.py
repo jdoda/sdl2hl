@@ -14,6 +14,8 @@ _event_userdata = set()
 
 
 class EventType(IntEnum):
+    firstevent = lib.SDL_FIRSTEVENT
+
     quit = lib.SDL_QUIT #: User-requested quit
 
     # Window events
@@ -29,7 +31,7 @@ class EventType(IntEnum):
 
     # Mouse events
     mousemotion = lib.SDL_MOUSEMOTION #: Mouse moved
-    mousebuttondow = lib.SDL_MOUSEBUTTONDOWN #: Mouse button pressed
+    mousebuttondown = lib.SDL_MOUSEBUTTONDOWN #: Mouse button pressed
     mousebuttonup = lib.SDL_MOUSEBUTTONUP #: Mouse button released
     mousewheel = lib.SDL_MOUSEWHEEL #: Mouse wheel motion
 
@@ -73,6 +75,8 @@ class EventType(IntEnum):
     # Render events
     render_targets_reset = lib.SDL_RENDER_TARGETS_RESET #: The render targets have been reset and their contents need to be updated
     #render_device_reset = lib.SDL_RENDER_DEVICE_RESET #: The device has been reset and all textures need to be recreated
+    
+    lastevent = lib.SDL_LASTEVENT
 
 
 class WindowEventType(IntEnum):
@@ -171,6 +175,87 @@ class KeyboardEvent(Event):
         return get_items(KeyMod, self._ptr.key.keysym.mod)
 
 
+class MouseMotionEvent(Event):
+
+    @property
+    def window_id(self):
+        """int: The id of the associated window."""
+        return self._ptr.motion.windowID
+        
+    @property
+    def which(self):
+        """int: The id of the mouse that generated the event."""
+        return self._ptr.motion.which
+        
+    @property
+    def state(self):
+        """int: The current button state."""
+        return self._ptr.motion.state
+    
+    @property
+    def x(self):
+        """int: The x coordinate, relative to the windows."""
+        return self._ptr.motion.x
+        
+    @property
+    def x(self):
+        """int: The x coordinate, relative to the window."""
+        return self._ptr.motion.x
+        
+    @property
+    def y(self):
+        """int: The y coordinate, relative to the window."""
+        return self._ptr.motion.y
+    
+    @property
+    def xrel(self):
+        """int: The relative motion in the x direction."""
+        return self._ptr.motion.xrel
+        
+    @property
+    def yrel(self):
+        """int: The relative motion in the y direction."""
+        return self._ptr.motion.yrel
+
+
+class MouseButtonEvent(Event):
+
+    @property
+    def window_id(self):
+        """int: The id of the associated window."""
+        return self._ptr.button.windowID
+        
+    @property
+    def which(self):
+        """int: The id of the mouse that generated the event."""
+        return self._ptr.button.which
+        
+    @property
+    def button(self):
+        """int: The mouse button index."""
+        return self._ptr.button.button
+
+    @property
+    def state(self):
+        """KeyState: The state of the mouse button."""
+        return KeyState(self._ptr.button.state)
+        
+    @property
+    def clicks(self):
+        """int: The number of clicks (single, double, etc.)."""
+        return self._ptr.button.clicks
+        
+    @property
+    def x(self):
+        """int: The x coordinate, relative to the window."""
+        return self._ptr.button.x
+        
+    @property
+    def y(self):
+        """int: The y coordinate, relative to the window."""
+        return self._ptr.button.y
+
+
 def pump():
     """Pumps the event loop, gathering events from the input devices.
     This function updates the event queue and internal input device state.
@@ -178,7 +263,7 @@ def pump():
     """
     lib.SDL_PumpEvents()
 
-def peek(quantity, min_type=lib.SDL_FIRSTEVENT, max_type=lib.SDL_LASTEVENT):
+def peek(quantity, min_type=Events.firstevent, max_type=Events.lastevent):
     """Return events at the front of the event queue, within the specified minimum and maximum type,
     and do not remove them from the queue.
 
@@ -196,7 +281,7 @@ def peek(quantity, min_type=lib.SDL_FIRSTEVENT, max_type=lib.SDL_LASTEVENT):
 
     return _peep(quantity, lib.SDL_PEEKEVENT, min_type, max_type)
 
-def get(quantity, min_type=lib.SDL_FIRSTEVENT, max_type=lib.SDL_LASTEVENT):
+def get(quantity, min_type=Events.firstevent, max_type=Events.lastevent):
     """Return events at the front of the event queue, within the specified minimum and maximum type,
     and remove them from the queue.
 
@@ -237,9 +322,12 @@ def poll():
       
         
 _EVENT_TYPES = {
-        EventType.quit : QuitEvent,
-        EventType.windowevent: WindowEvent,
-        EventType.keydown : KeyboardEvent,
-        EventType.keyup : KeyboardEvent,
-    }
+    EventType.quit : QuitEvent,
+    EventType.windowevent: WindowEvent,
+    EventType.keydown : KeyboardEvent,
+    EventType.keyup : KeyboardEvent,
+    EventType.mousemotion : MouseMotionEvent
+    EventType.mousebuttondown : MouseButtonEvent
+    EventType.mousebuttonup : MouseButtonEvent
+}
     
