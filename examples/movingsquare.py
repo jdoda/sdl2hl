@@ -1,7 +1,7 @@
 import sys
 
 import sdl2hl
-
+import sdl2hl.gfx
 
 BACKGROUND_COLOR = (0,0,0,255)
 AVATAR_COLOR = (255,0,0,255)
@@ -31,7 +31,7 @@ while True:
     renderer.draw_color = AVATAR_COLOR
     renderer.fill_rect(avatar)
     
-    renderer.draw_circle(32, 32, 60, AVATAR_COLOR)
+    sdl2hl.gfx.GfxPrimitives(renderer).draw_circle(32, 32, 60, AVATAR_COLOR)
 
     renderer.present()
     
