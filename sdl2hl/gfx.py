@@ -40,4 +40,4 @@ class GfxPrimitives(object):
         Raises:
             SDLError: If an error is encountered.
         """
-        check_int_err(lib.arcRGBA(self._ptr, x, y, r, start, end, color[0], color[1], color[2], color[3])
+        check_int_err(lib.arcRGBA(self._ptr, x, y, r, start, end, color[0], color[1], color[2], color[3]))
