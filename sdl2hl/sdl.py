@@ -5,7 +5,7 @@ from error import check_int_err
 import enumtools
 
 
-class InitFlags(IntEnum):
+class InitFlag(IntEnum):
     """These are the flags which may be passed to SDL_Init(). You should specify the subsystems which
     you will be using in your application.
     """
@@ -29,7 +29,7 @@ def init(*flags):
     """This function initializes the subsystems specified by flags.
 
     Args:
-        *flags (InitFlags): Flags specifying which subsystems to initialize.
+        *flags (InitFlag): Flags specifying which subsystems to initialize.
 
     Raises:
         SDLError: If there's an error initializing SDL.
@@ -40,7 +40,7 @@ def was_init():
     """This function returns the subsystems which have previously been initialized.
 
     Returns:
-        Set[InitFlags]: Flags indicating which subsystems have been initialized.
+        Set[InitFlag]: Flags indicating which subsystems have been initialized.
     """
     mask = lib.SDL_WasInit(0)
     return enumtools.get_items(InitFlags, mask, {InitFlags.everything})
