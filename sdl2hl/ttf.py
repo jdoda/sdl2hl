@@ -12,7 +12,8 @@ class Font(object):
         return font
     
     def __init__(self, font_bytes, size):
-        rw = check_ptr_err(lib.SDL_RWFromConstMem(font_bytes, len(font_bytes)))
+        self._bytes = font_bytes # This is a workaround for some sort of weird lifetime issue.
+        rw = check_ptr_err(lib.SDL_RWFromConstMem(self._bytes, len(self._bytes)))
         self._ptr = check_ptr_err(lib.TTF_OpenFontRW(rw, 1, size))
         
     def __del__(self):
