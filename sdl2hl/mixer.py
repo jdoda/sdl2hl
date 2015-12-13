@@ -33,8 +33,8 @@ class Chunk(object):
         chunk._ptr = check_ptr_err(lib.Mix_LoadWAV_RW(rw, 1))
         return chunk
     
-    def __init__(self, b):
-        rw = check_ptr_err(lib.SDL_RWFromConstMem(b, len(b)))
+    def __init__(self, audio_bytes):
+        rw = check_ptr_err(lib.SDL_RWFromConstMem(audio_bytes, len(audio_bytes)))
         self._ptr = check_ptr_err(lib.Mix_LoadWAV_RW(rw, 1))
         
     def __del__(self):
