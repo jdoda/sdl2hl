@@ -7,6 +7,7 @@ from error import check_int_err
 from keycode import KeyCode, KeyMod
 from scancode import ScanCode
 from enumtools import get_items
+from gamecontroller import ControllerAxis, ControllerButton
 
 
 _event_reference_map = weakref.WeakKeyDictionary()
@@ -175,6 +176,19 @@ class KeyboardEvent(Event):
         return get_items(KeyMod, self._ptr.key.keysym.mod)
 
 
+class TextInputEvent(Event):
+    
+    @property
+    def window_id(self):
+        """int: The id of the window with keyboard focus, if any."""
+        return self._ptr.text.windowID
+        
+    @property
+    def text(self):
+        """str: The input text."""
+        return ffi.string(self._ptr.text.text)
+        
+        
 class MouseMotionEvent(Event):
 
     @property
@@ -256,17 +270,40 @@ class MouseButtonEvent(Event):
         return self._ptr.button.y
 
 
-class TextInputEvent(Event):
+class ControllerAxisEvent(Event):
     
     @property
-    def window_id(self):
-        """int: The id of the window with keyboard focus, if any."""
-        return self._ptr.text.windowID
+    def which(self):
+        """int: The controller instance id."""
+        return self._ptr.caxis.which
+    
+    @property
+    def axis(self):
+        """ControllerAxis: The controller axis."""
+        return ControllerAxis(self._ptr.caxis.axis)
+
+    @property
+    def value(self):
+        """int: The axis value (range: -32768 to 32767)."""
+        return self._ptr.caxis.value
+
+
+def ControllerButtonEvent(Event):
+    
+    @property
+    def which(self):
+        """int: The controller instance id."""
+        return self._ptr.cbutton.which
         
     @property
-    def text(self):
-        """str: The input text."""
-        return ffi.string(self._ptr.text.text)
+    def button(self):
+        """ControllerButton: The controller button."""
+        return ControllerButton(self._ptr.cbutton.button)
+        
+    @property
+    def state(self):
+        """KeyState: The button state."""
+        return KeyState(self._ptr.cbutton.state)
 
 
 def pump():
@@ -343,5 +380,8 @@ _EVENT_TYPES = {
     EventType.mousemotion : MouseMotionEvent,
     EventType.mousebuttondown : MouseButtonEvent,
     EventType.mousebuttonup : MouseButtonEvent,
+    EventType.controlleraxismotion : ControllerAxisEvent,
+    EventType.controllerbuttondown : ControllerButtonEvent,
+    EventType.controllerbuttonup : ControllerButtonEvent,
 }
     
