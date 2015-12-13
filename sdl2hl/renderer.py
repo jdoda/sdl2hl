@@ -15,6 +15,13 @@ class RendererFlags(IntEnum):
     targettexture = lib.SDL_RENDERER_TARGETTEXTURE #: The renderer supports rendering to texture.
 
 
+class BlendMode(IntEnum):
+    add = lib.SDL_BLENDMODE_ADD
+    blend = lib.SDL_BLENDMODE_BLEND
+    mod = lib.SDL_BLENDMODE_MOD
+    none = lib.SDL_BLENDMODE_NONE
+
+
 class Renderer(object):
 
     @staticmethod
@@ -128,6 +135,17 @@ class Renderer(object):
     @render_target.setter
     def render_target(self, texture):
         check_int_err(lib.SDL_SetRenderTarget(self._ptr, texture._ptr))
+
+    @property
+    def blend_mode(self):
+        """BlendMode: The blend mode used for drawing operations."""
+        blend_mode_ptr = ffi.new('int *')
+        lib.SDL_GetRenderDrawBlendMode(self._ptr, blend_mode_ptr)
+        return BlendMode(blend_mode_ptr[0])
+
+    @blend_mode.setter
+    def blend_mode(self, blend_mode):
+        lib.SDL_SetRenderDrawBlendMode(self._ptr, blend_mode)
 
     def clear(self):
         """Clear the current rendering target with the drawing color.
