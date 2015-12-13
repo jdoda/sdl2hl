@@ -256,6 +256,19 @@ class MouseButtonEvent(Event):
         return self._ptr.button.y
 
 
+class TextInputEvent(Event):
+    
+    @property
+    def window_id(self):
+        """int: The id of the window with keyboard focus, if any."""
+        return self._ptr.text.windowID
+        
+    @property
+    def text(self):
+        """str: The input text."""
+        return ffi.string(self._ptr.text.text)
+
+
 def pump():
     """Pumps the event loop, gathering events from the input devices.
     This function updates the event queue and internal input device state.
@@ -326,6 +339,7 @@ _EVENT_TYPES = {
     EventType.windowevent: WindowEvent,
     EventType.keydown : KeyboardEvent,
     EventType.keyup : KeyboardEvent,
+    EventType.textinput : TextInputEvent,
     EventType.mousemotion : MouseMotionEvent,
     EventType.mousebuttondown : MouseButtonEvent,
     EventType.mousebuttonup : MouseButtonEvent,
