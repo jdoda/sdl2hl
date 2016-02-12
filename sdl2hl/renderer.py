@@ -310,7 +310,7 @@ class Texture(object):
     def _from_ptr(ptr):
         renderer = object.__new__(Texture)
         renderer._ptr = ptr
-        return texture
+        return renderer
 
     @staticmethod
     def from_surface(renderer, surface):

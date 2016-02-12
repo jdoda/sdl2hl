@@ -41,3 +41,19 @@ class GfxPrimitives(object):
             SDLError: If an error is encountered.
         """
         check_int_err(lib.arcRGBA(self._ptr, x, y, r, start, end, color[0], color[1], color[2], color[3]))
+
+    def draw_line(self, x1, y1, x2, y2, color):
+        """Draw a line.
+
+        Args:
+            x1 (int): The x coordinate of the start of the line.
+            y1 (int): The y coordinate of the start of the line.
+            x2 (int): The x coordinate of the end of the line.
+            y2 (int): The y coordinate of the end of the line.
+            color (Tuple[int, int, int, int]): The color of the circle.
+
+        Raises:
+            SDLError: If an error is encountered.
+
+        """
+        check_int_err(lib.lineRGBA(self._ptr, x1, y1, x2, y2, color[0], color[1], color[2], color[3]))
