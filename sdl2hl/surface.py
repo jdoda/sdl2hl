@@ -34,12 +34,12 @@ class Surface(object):
     @property
     def w(self):
         """int: The width of the surface."""
-        return self._ptr.contents.w
+        return self._ptr.w
 
     @property
     def h(self):
         """int: The height of the surface."""
-        return self._ptr.contents.h
+        return self._ptr.h
 
     def blit(self, src_rect, dst_surf, dst_rect):
         """Performs a fast blit from the source surface to the destination surface.
