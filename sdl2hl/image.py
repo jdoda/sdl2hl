@@ -21,7 +21,7 @@ def init(*flags):
     Args:
         *flags (Set[ImageInitFlag]): The desired image file formats.
     """
-    lib.IMG_Init(enumtools.get_mask(flags))
+    check_int_err(lib.IMG_Init(enumtools.get_mask(flags)))
 
 
 def quit():
@@ -38,7 +38,7 @@ def load(file):
         A new surface.
 
     """
-    return Surface._from_ptr(lib.IMG_Load(file))
+    return Surface._from_ptr(check_ptr_err(lib.IMG_Load(file)))
 
 
 def load_texture(renderer, file):
@@ -50,7 +50,7 @@ def load_texture(renderer, file):
     Returns:
         A new texture
     """
-    return Texture._from_ptr(lib.IMG_LoadTexture(renderer._ptr, file))
+    return Texture._from_ptr(check_ptr_err(lib.IMG_LoadTexture(renderer._ptr, file)))
 
 
 def save(surface, file):
@@ -60,4 +60,4 @@ def save(surface, file):
         file: The file path to save to.
 
     """
-    lib.IMG_SavePNG(surface._ptr, file)
+    check_int_err(lib.IMG_SavePNG(surface._ptr, file))

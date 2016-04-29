@@ -134,7 +134,7 @@ class Renderer(object):
 
     @render_target.setter
     def render_target(self, texture):
-        if texture:
+        if texture is not None:
             p = texture._ptr
         else:
             p = ffi.NULL
@@ -144,12 +144,12 @@ class Renderer(object):
     def blend_mode(self):
         """BlendMode: The blend mode used for drawing operations."""
         blend_mode_ptr = ffi.new('int *')
-        lib.SDL_GetRenderDrawBlendMode(self._ptr, blend_mode_ptr)
+        check_int_err(lib.SDL_GetRenderDrawBlendMode(self._ptr, blend_mode_ptr))
         return BlendMode(blend_mode_ptr[0])
 
     @blend_mode.setter
     def blend_mode(self, blend_mode):
-        lib.SDL_SetRenderDrawBlendMode(self._ptr, blend_mode)
+        check_int_err(lib.SDL_SetRenderDrawBlendMode(self._ptr, blend_mode))
 
     def clear(self):
         """Clear the current rendering target with the drawing color.
