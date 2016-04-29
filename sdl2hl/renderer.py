@@ -134,7 +134,11 @@ class Renderer(object):
 
     @render_target.setter
     def render_target(self, texture):
-        check_int_err(lib.SDL_SetRenderTarget(self._ptr, texture._ptr))
+        if texture:
+            p = texture._ptr
+        else:
+            p = ffi.NULL
+        check_int_err(lib.SDL_SetRenderTarget(self._ptr, p))
 
     @property
     def blend_mode(self):
@@ -310,7 +314,7 @@ class Texture(object):
     def _from_ptr(ptr):
         renderer = object.__new__(Texture)
         renderer._ptr = ptr
-        return texture
+        return renderer
 
     @staticmethod
     def from_surface(renderer, surface):
@@ -402,4 +406,15 @@ class Texture(object):
     @alpha_mod.setter
     def alpha_mod(self, a):
         check_int_err(lib.SDL_SetTextureAlphaMod(self._ptr, a))
+
+    @property
+    def blend_mode(self):
+        """BlendMode: The blend mode used for drawing operations."""
+        blend_mode_ptr = ffi.new('int *')
+        lib.SDL_GetTextureBlendMode(self._ptr, blend_mode_ptr)
+        return BlendMode(blend_mode_ptr[0])
+
+    @blend_mode.setter
+    def blend_mode(self, blend_mode):
+        check_int_err(lib.SDL_SetTextureBlendMode(self._ptr, blend_mode))
     

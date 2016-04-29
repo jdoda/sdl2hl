@@ -10,3 +10,4 @@ from scancode import *
 import timer
 from error import SDLError
 from gamecontroller import *
+import image
