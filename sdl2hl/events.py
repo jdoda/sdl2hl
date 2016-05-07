@@ -28,7 +28,7 @@ class EventType(IntEnum):
     keyup = lib.SDL_KEYUP #: Key released
     textediting = lib.SDL_TEXTEDITING #: Keyboard text editing (composition)
     textinput = lib.SDL_TEXTINPUT #: Keyboard text input
-    #keymapchanged = lib.SDL_KEYMAPCHANGED #: Keymap changed due to a system event such as an input language or keyboard layout change.
+    keymapchanged = lib.SDL_KEYMAPCHANGED #: Keymap changed due to a system event such as an input language or keyboard layout change.
 
     # Mouse events
     mousemotion = lib.SDL_MOUSEMOTION #: Mouse moved
@@ -70,12 +70,12 @@ class EventType(IntEnum):
     dropfile = lib.SDL_DROPFILE #: The system requests a file open
 
     # Audio hotplug events
-    #audiodeviceadded = lib.SDL_AUDIODEVICEADDED #: A new audio device is available
-    #audiodeviceremoved = lib.SDL_AUDIODEVICEREMOVED #: An audio device has been removed.
+    audiodeviceadded = lib.SDL_AUDIODEVICEADDED #: A new audio device is available
+    audiodeviceremoved = lib.SDL_AUDIODEVICEREMOVED #: An audio device has been removed.
 
     # Render events
     render_targets_reset = lib.SDL_RENDER_TARGETS_RESET #: The render targets have been reset and their contents need to be updated
-    #render_device_reset = lib.SDL_RENDER_DEVICE_RESET #: The device has been reset and all textures need to be recreated
+    render_device_reset = lib.SDL_RENDER_DEVICE_RESET #: The device has been reset and all textures need to be recreated
     
     lastevent = lib.SDL_LASTEVENT
 
@@ -288,7 +288,7 @@ class ControllerAxisEvent(Event):
         return self._ptr.caxis.value
 
 
-def ControllerButtonEvent(Event):
+class ControllerButtonEvent(Event):
     
     @property
     def which(self):

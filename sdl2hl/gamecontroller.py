@@ -1,7 +1,7 @@
 from enum import IntEnum
 
 from sdl2._sdl2 import lib
-from error import check_ptr_err
+from error import check_int_err, check_ptr_err
 
 
 class ControllerAxis(IntEnum):
@@ -36,6 +36,10 @@ class ControllerButton(IntEnum):
     
 
 class GameController(object):
+    
+    @staticmethod
+    def get_count():
+        return check_int_err(lib.SDL_NumJoysticks())
     
     def __init__(self, index=0):
         self._ptr = check_ptr_err(lib.SDL_GameControllerOpen(index))
