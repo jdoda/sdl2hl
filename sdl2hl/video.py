@@ -1,7 +1,7 @@
 from enum import IntEnum
 
 from sdl2._sdl2 import ffi, lib
-from error import check_ptr_err
+from error import check_int_err, check_ptr_err
 import enumtools
 
 
@@ -46,8 +46,8 @@ class Window(object):
 
     @property
     def flags(self):
-        """int: The flags for the window."""
-        return lib.SDL_GetWindowFlags(self._ptr)
+        """set[WindowFlags]: The flags for the window."""
+        return enumtools.get_items(WindowFlags, lib.SDL_GetWindowFlags(self._ptr))
 
     @property
     def title(self):
@@ -105,6 +105,9 @@ class Window(object):
     def restore(self):
         """Restore the size and position of a minimized or maximized window."""
         lib.SDL_RestoreWindow(self._ptr)
+
+    def set_fullscreen(self, flag):
+        check_int_err(lib.SDL_SetWindowFullscreen(self._ptr, flag))
 
     def swap(self):
         """Swap the OpenGL buffers, if double-buffering is supported."""
