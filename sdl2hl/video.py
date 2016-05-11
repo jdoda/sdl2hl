@@ -136,11 +136,11 @@ class Display(object):
 
     def __init__(self, index):
         """Create a new Display for the given index"""
-        self.index = index
+        self._index = index
 
     def get_desktop_size(self):
         """Get the size of the desktop display"""
 
         _ptr = ffi.new('SDL_DisplayMode *')
-        check_int_err(lib.SDL_GetDesktopDisplayMode(self.index, _ptr))
+        check_int_err(lib.SDL_GetDesktopDisplayMode(self._index, _ptr))
         return (_ptr.w, _ptr.h)
