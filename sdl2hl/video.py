@@ -128,3 +128,19 @@ class GLContext(object):
     def __del__(self):
         lib.SDL_GL_DeleteContext(self._ptr)
     
+
+
+class Display(object):
+    """The type used to identify a display"""
+
+
+    def __init__(self, index):
+        """Create a new Display for the given index"""
+        self.index = index
+
+    def get_desktop_size(self):
+        """Get the size of the desktop display"""
+
+        _ptr = ffi.new('SDL_DisplayMode *')
+        check_int_err(lib.SDL_GetDesktopDisplayMode(self.index, _ptr))
+        return (_ptr.w, _ptr.h)
