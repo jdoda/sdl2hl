@@ -9,7 +9,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 
 setup(
     name='sdl2hl',
-    version='0.2.1',
+    version='0.3.1',
 
     description='A Pythonic API wrapper for SDL2.',
     long_description=long_description,
@@ -34,7 +34,7 @@ setup(
     test_suite='tests',
 
     install_requires=[
-        'enum34>=1.0.0',
-        'sdl2-cffi>=1.0.0',
+        'enum34 >= 1.0.0',
+        'sdl2-cffi >= 1.0.5',
     ],
 )
