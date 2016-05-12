@@ -26,7 +26,7 @@ class Window(object):
     """The type used to identify a window."""
 
     def __init__(self, title='sdl2', x=lib.SDL_WINDOWPOS_CENTERED, y=lib.SDL_WINDOWPOS_CENTERED,
-                 w=640, h=480, *flags):
+                 w=640, h=480, flags=frozenset()):
         """Create a window with the specified position, dimensions, and flags.
 
         Args:
@@ -35,7 +35,7 @@ class Window(object):
             y (int): The y position of the window.
             w (int): The width of the window.
             h (int): The height of the window.
-            *flags (WindowFlags): The flags for the window.
+            flags (Set[WindowFlags]): The flags for the window.
         Raises:
             SDLError: If the window could not be created.
         """

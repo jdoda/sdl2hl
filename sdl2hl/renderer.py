@@ -47,14 +47,14 @@ class Renderer(object):
         renderer._ptr = self._ptr = check_ptr_err(lib.SDL_CreateSoftwareRenderer(surface._ptr))
         return renderer
 
-    def __init__(self, window, index=-1, *flags):
+    def __init__(self, window, index=-1, flags=frozenset()):
         """Create a 2D rendering context for a window.
 
         Args:
             window (Window): The window where rendering is displayed.
             index (int): The index of the rendering driver to initialize, or -1 to initialize the first one supporting
                          the requested flags.
-            *flags (RendererFlags): The requested renderer flags.
+            flags (Set[RendererFlags]): The requested renderer flags.
 
         Raises:
             SDLError: If there was an error creating the renderer.
