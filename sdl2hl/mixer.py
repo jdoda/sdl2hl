@@ -116,3 +116,14 @@ def close_audio():
     """Close the mixer, halting all playing audio."""
     lib.Mix_CloseAudio()
     
+def allocate_channels(count):
+    """Set the number of channels to mix.
+    
+    Args:
+        count (int): The number of channels to mix.
+        
+    Returns:
+        int: The number of channels being mixed.
+    """
+    return lib.Mix_AllocateChannels(count)
+    
