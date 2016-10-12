@@ -28,7 +28,7 @@ class EventType(IntEnum):
     keyup = lib.SDL_KEYUP #: Key released
     textediting = lib.SDL_TEXTEDITING #: Keyboard text editing (composition)
     textinput = lib.SDL_TEXTINPUT #: Keyboard text input
-    keymapchanged = lib.SDL_KEYMAPCHANGED #: Keymap changed due to a system event such as an input language or keyboard layout change.
+#    keymapchanged = lib.SDL_KEYMAPCHANGED #: Keymap changed due to a system event such as an input language or keyboard layout change.
 
     # Mouse events
     mousemotion = lib.SDL_MOUSEMOTION #: Mouse moved
@@ -70,12 +70,12 @@ class EventType(IntEnum):
     dropfile = lib.SDL_DROPFILE #: The system requests a file open
 
     # Audio hotplug events
-    audiodeviceadded = lib.SDL_AUDIODEVICEADDED #: A new audio device is available
-    audiodeviceremoved = lib.SDL_AUDIODEVICEREMOVED #: An audio device has been removed.
+#    audiodeviceadded = lib.SDL_AUDIODEVICEADDED #: A new audio device is available
+#    audiodeviceremoved = lib.SDL_AUDIODEVICEREMOVED #: An audio device has been removed.
 
     # Render events
     render_targets_reset = lib.SDL_RENDER_TARGETS_RESET #: The render targets have been reset and their contents need to be updated
-    render_device_reset = lib.SDL_RENDER_DEVICE_RESET #: The device has been reset and all textures need to be recreated
+#    render_device_reset = lib.SDL_RENDER_DEVICE_RESET #: The device has been reset and all textures need to be recreated
     
     lastevent = lib.SDL_LASTEVENT
 
@@ -118,7 +118,10 @@ class Event(object):
     @property
     def type(self):
         """EventType: The type of the event."""
-        return EventType(self._ptr.common.type)
+        try:
+            return EventType(self._ptr.common.type)
+        except:
+            return EventType.lastevent
 
     @property
     def timestamp(self):
@@ -368,7 +371,7 @@ def poll():
     event_ptr = ffi.new('SDL_Event *')
     while lib.SDL_PollEvent(event_ptr):
         yield Event._from_ptr(event_ptr)
-        event = ffi.new('SDL_Event *')
+        event_ptr = ffi.new('SDL_Event *')
       
         
 _EVENT_TYPES = {
