@@ -1,5 +1,5 @@
 from sdl2._sdl2 import ffi, lib
-from error import check_int_err
+from error import check_int_err, check_ptr_err
 
 
 class Surface(object):
@@ -57,4 +57,7 @@ class Surface(object):
             SDLError: If the blit fails.
         """
         check_int_err(lib.SDL_UpperBlit(self._ptr, src_rect._ptr, dst_surf._ptr, dst_rect._ptr))
+        
+    def save_bmp(self, path):
+        check_int_err(lib.SDL_SaveBMP_RW(self._ptr, lib.SDL_RWFromFile(path, "wb"), 1))
 
