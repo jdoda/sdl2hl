@@ -28,6 +28,9 @@ class Surface(object):
         surface._ptr = check_ptr_err(lib.SDL_LoadBMP_RW(lib.SDL_RWFromFile(path, "rb"), 1))
         return surface
 
+    def __init__(self, w, h, depth, fmt):
+        self._ptr = check_ptr_err(lib.SDL_CreateRGBSurfaceWithFormat(0, w, h, depth, fmt))
+
     def __del__(self):
         lib.SDL_FreeSurface(self._ptr)
 
